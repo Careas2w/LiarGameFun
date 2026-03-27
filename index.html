@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liar Game Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#111827;
+      --bg3:#172554;
+      --glass:rgba(255,255,255,.08);
+      --glass-strong:rgba(255,255,255,.12);
+      --panel:rgba(15,23,42,.78);
+      --panel-2:rgba(15,23,42,.88);
+      --line:rgba(255,255,255,.12);
+      --text:#f8fafc;
+      --muted:#cbd5e1;
+      --soft:#94a3b8;
+      --blue:#60a5fa;
+      --cyan:#67e8f9;
+      --green:#4ade80;
+      --purple:#a78bfa;
+      --yellow:#facc15;
+      --red:#fb7185;
+      --orange:#fb923c;
+      --shadow:0 18px 60px rgba(0,0,0,.35);
+      --radius-xl:28px;
+      --radius-lg:20px;
+      --radius-md:16px;
+    }
+
+    * { box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body { min-height:100%; }
+
+    body{
+      margin:0;
+      color:var(--text);
+      font-family:'Poppins', system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(103,232,249,.16), transparent 25%),
+        radial-gradient(circle at 88% 12%, rgba(167,139,250,.18), transparent 24%),
+        radial-gradient(circle at 50% 90%, rgba(74,222,128,.12), transparent 26%),
+        linear-gradient(270deg, var(--bg1), var(--bg2), var(--bg3), #111827);
+      background-size: 220% 220%;
+      animation: gradientMove 18s ease infinite;
+      display:flex;
+      justify-content:center;
+      padding:22px;
+      overflow-x:hidden;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position:0% 50%; }
+      50% { background-position:100% 50%; }
+      100% { background-position:0% 50%; }
+    }
+
+    body::before, body::after{
+      content:"";
+      position:fixed;
+      inset:auto;
+      width:260px;
+      height:260px;
+      border-radius:999px;
+      filter:blur(60px);
+      opacity:.18;
+      z-index:0;
+      pointer-events:none;
+    }
+    body::before{
+      background:var(--purple);
+      top:-40px;
+      right:-40px;
+      animation: floatBlob 10s ease-in-out infinite;
+    }
+    body::after{
+      background:var(--cyan);
+      bottom:-50px;
+      left:-20px;
+      animation: floatBlob 13s ease-in-out infinite reverse;
+    }
+    @keyframes floatBlob {
+      0%,100%{ transform:translateY(0) translateX(0) scale(1); }
+      50%{ transform:translateY(18px) translateX(12px) scale(1.08); }
+    }
+
+    .app{
+      position:relative;
+      z-index:1;
+      width:100%;
+      max-width:1080px;
+      display:grid;
+      gap:18px;
+    }
+
+    .screen-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      overflow:hidden;
+    }
+
+    .card-body{ padding:24px; }
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      box-shadow:0 10px 30px rgba(0,0,0,.16);
+      backdrop-filter: blur(10px);
+      padding:18px;
+    }
+
+    .hidden{ display:none !important; }
+    h1,h2,h3,p{ margin:0; }
+    h1{
+      font-size:clamp(34px, 6vw, 54px);
+      line-height:1;
+      letter-spacing:-.04em;
+      margin-bottom:10px;
+    }
+    h2{
+      font-size:clamp(24px, 4vw, 32px);
+      letter-spacing:-.03em;
+      margin-bottom:8px;
+    }
+    h3{
+      font-size:18px;
+      margin-bottom:6px;
+    }
+    .sub{
+      color:var(--muted);
+      line-height:1.6;
+      margin-bottom:18px;
+    }
+    .small{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+    }
+    .muted{ color:var(--muted); }
+    .center{ text-align:center; }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:18px;
+      align-items:center;
+    }
+
+    .hero-panel{
+      padding:28px;
+      min-height:240px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-panel::after{
+      content:"";
+      position:absolute;
+      right:-20px;
+      bottom:-20px;
+      width:160px;
+      height:160px;
+      background:radial-gradient(circle, rgba(255,255,255,.08), transparent 68%);
+      pointer-events:none;
+    }
+
+    .badge-row, .tag-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .badge, .tag, .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(15,23,42,.6);
+      color:var(--muted);
+      font-size:13px;
+      font-weight:600;
+    }
+
+    .spark{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      background:linear-gradient(135deg, rgba(96,165,250,.2), rgba(167,139,250,.22));
+      border:1px solid rgba(255,255,255,.1);
+      margin-bottom:14px;
+      font-size:22px;
+    }
+
+    .mascot-card{
+      min-height:240px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top, rgba(103,232,249,.12), transparent 38%),
+        linear-gradient(180deg, rgba(15,23,42,.92), rgba(15,23,42,.78));
+    }
+
+    .mascot-wrap{
+      position:relative;
+      width:min(260px, 100%);
+      aspect-ratio:1 / 1;
+      display:grid;
+      place-items:center;
+    }
+
+    .mascot-glow{
+      position:absolute;
+      inset:18%;
+      background:radial-gradient(circle, rgba(103,232,249,.28), transparent 60%);
+      filter:blur(20px);
+    }
+
+    .mascot-note{
+      position:absolute;
+      bottom:10px;
+      text-align:center;
+      width:100%;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .grid{ display:grid; gap:14px; }
+    .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .actions-compact{
+      display:grid;
+      gap:12px;
+      max-width:680px;
+      margin:18px auto 0;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:600;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    input, select, button{
+      width:100%;
+      border:none;
+      outline:none;
+      border-radius:16px;
+      padding:14px 16px;
+      font-size:16px;
+      font-family:inherit;
+    }
+
+    input, select{
+      background:rgba(2,6,23,.6);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.08);
+      transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    input:focus, select:focus{
+      border-color:rgba(103,232,249,.6);
+      box-shadow:0 0 0 4px rgba(103,232,249,.12);
+      transform:translateY(-1px);
+    }
+
+    button{
+      cursor:pointer;
+      font-weight:800;
+      letter-spacing:.01em;
+      transition:transform .16s ease, box-shadow .2s ease, opacity .2s ease, filter .2s ease;
+      box-shadow:0 10px 20px rgba(0,0,0,.18);
+    }
+
+    button:hover{
+      transform:translateY(-2px) scale(1.01);
+      filter:brightness(1.04);
+    }
+    button:active{
+      transform:translateY(0) scale(.98);
+    }
+    button:disabled{
+      cursor:not-allowed;
+      opacity:.55;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .btn-primary{ background:linear-gradient(135deg, var(--blue), var(--cyan)); color:#082f49; }
+    .btn-success{ background:linear-gradient(135deg, var(--green), #86efac); color:#052e16; }
+    .btn-secondary{ background:linear-gradient(135deg, #334155, #475569); color:#fff; }
+    .btn-warning{ background:linear-gradient(135deg, var(--purple), #c4b5fd); color:#2e1065; }
+    .btn-danger{ background:linear-gradient(135deg, var(--red), var(--orange)); color:white; }
+    .btn-ghost{
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:none;
+    }
+
+    .password-wrap{ position:relative; }
+    .password-wrap input{ padding-right:116px; }
+    .toggle-password{
+      position:absolute;
+      top:50%;
+      right:8px;
+      transform:translateY(-50%);
+      width:auto;
+      padding:10px 12px;
+      border-radius:12px;
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      font-size:14px;
+      box-shadow:none;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .status-bad{ color:#fecaca; }
+
+    .players{
+      display:grid;
+      gap:12px;
+      margin-top:8px;
+    }
+
+    .player{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:14px;
+      border-radius:18px;
+      background:rgba(2,6,23,.45);
+      border:1px solid rgba(255,255,255,.08);
+      transition:transform .15s ease, background .2s ease;
+    }
+    .player:hover{ transform:translateY(-1px); background:rgba(15,23,42,.78); }
+
+    .player-main{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .avatar{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      font-weight:900;
+      color:#fff;
+      background:linear-gradient(135deg, rgba(96,165,250,.85), rgba(167,139,250,.85));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.2);
+    }
+
+    .player-name{
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .player-side{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .status-dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background:var(--green);
+      box-shadow:0 0 12px rgba(74,222,128,.7);
+    }
+
+    .status-wait{ background:#64748b; box-shadow:none; }
+
+    .big-code{
+      font-size:clamp(34px, 8vw, 62px);
+      line-height:1;
+      letter-spacing:.18em;
+      font-weight:900;
+      text-transform:uppercase;
+      margin:10px 0 6px;
+      text-shadow:0 10px 20px rgba(0,0,0,.35);
+    }
+
+    .timer-card{
+      display:grid;
+      gap:10px;
+      align-content:start;
+    }
+
+    .timer-number{
+      font-size:clamp(34px,6vw,54px);
+      font-weight:900;
+      letter-spacing:-.04em;
+      color:#fde68a;
+      line-height:1;
+    }
+
+    .progress-track{
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .progress-bar{
+      height:100%;
+      width:100%;
+      background:linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+      transition:width .9s linear;
+    }
+
+    .word-stage{
+      display:grid;
+      gap:14px;
+      margin-top:10px;
+    }
+
+    .word-prompt{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      justify-content:center;
+      color:var(--muted);
+      font-weight:600;
+    }
+
+    .word-box{
+      position:relative;
+      min-height:190px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      border-radius:26px;
+      padding:28px;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top, rgba(103,232,249,.16), transparent 38%),
+        linear-gradient(180deg, rgba(15,23,42,.92), rgba(15,23,42,.78));
+      border:1px dashed rgba(255,255,255,.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+      font-size:clamp(42px, 8vw, 78px);
+      font-weight:900;
+      line-height:1.05;
+      letter-spacing:-.04em;
+      word-break:break-word;
+      transition:transform .25s ease, box-shadow .25s ease;
+    }
+
+    .word-box.revealed{
+      animation:popIn .35s ease;
+      box-shadow:0 0 0 1px rgba(103,232,249,.15), 0 18px 40px rgba(0,0,0,.2);
+    }
+
+    @keyframes popIn{
+      0%{ transform:scale(.92); opacity:.55; }
+      100%{ transform:scale(1); opacity:1; }
+    }
+
+    .round-hero{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+
+    .footer-note{
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      padding-bottom:2px;
+    }
+
+    .full-width{ width:100%; }
+
+    @media (max-width: 820px){
+      .hero, .grid-2, .grid-3, .round-hero { grid-template-columns:1fr; }
+      .mascot-card{ min-height:220px; }
+      .word-box{ min-height:170px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      body, body::before, body::after, .word-box.revealed { animation:none !important; }
+      * { transition:none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="screen-card" id="screen-auth">
+      <div class="card-body">
+        <div class="hero">
+          <div class="card hero-panel">
+            <div class="spark">🎭</div>
+            <h1>Liar Game</h1>
+            <p class="sub">Una sala, un impostor y una palabra sospechosamente parecida. Diseño limpio, ritmo de party game y todo listo para jugar desde GitHub Pages + Supabase.</p>
+            <div class="badge-row">
+              <div class="badge">⚡ Multijugador online</div>
+              <div class="badge">🎯 Temas por categoría</div>
+              <div class="badge">🌀 Rondas ilimitadas</div>
+            </div>
+          </div>
+
+          <div class="card mascot-card">
+            <div class="mascot-wrap" aria-hidden="true">
+              <div class="mascot-glow"></div>
+              <svg viewBox="0 0 240 240" width="100%" height="100%">
+                <defs>
+                  <linearGradient id="hatGrad" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#60a5fa"/>
+                    <stop offset="100%" stop-color="#67e8f9"/>
+                  </linearGradient>
+                  <linearGradient id="bodyGrad" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#fb7185"/>
+                  </linearGradient>
+                </defs>
+                <circle cx="120" cy="120" r="92" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+                <ellipse cx="120" cy="180" rx="58" ry="20" fill="rgba(0,0,0,0.18)"/>
+                <rect x="70" y="84" width="100" height="92" rx="40" fill="url(#bodyGrad)" />
+                <circle cx="120" cy="90" r="48" fill="#f6d7b0"/>
+                <path d="M81 67 L116 34 L155 66 Z" fill="url(#hatGrad)"/>
+                <rect x="86" y="66" width="68" height="14" rx="7" fill="#0f172a"/>
+                <circle cx="103" cy="88" r="5" fill="#0f172a"/>
+                <circle cx="137" cy="88" r="5" fill="#0f172a"/>
+                <path d="M102 106 Q120 118 138 106" fill="none" stroke="#0f172a" stroke-width="4" stroke-linecap="round"/>
+                <rect x="120" y="94" width="48" height="8" rx="4" fill="#f59e0b"/>
+                <circle cx="120" cy="96" r="5" fill="#eab308"/>
+                <path d="M88 153 Q120 170 152 153" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="86" cy="146" r="9" fill="#f6d7b0"/>
+                <circle cx="154" cy="146" r="9" fill="#f6d7b0"/>
+                <rect x="89" y="167" width="62" height="10" rx="5" fill="rgba(255,255,255,.26)"/>
+              </svg>
+              <div class="mascot-note">Lino, el muñeco que siempre “casi” dice la verdad.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px;">
+          <h3>Acceso</h3>
+          <p class="sub">Introduce la clave para entrar al menú principal.</p>
+          <div class="grid">
+            <div>
+              <label>Clave de acceso</label>
+              <div class="password-wrap">
+                <input id="accessPassword" type="password" placeholder="Introduce la clave" />
+                <button type="button" class="toggle-password" id="btnTogglePassword">Mostrar</button>
+              </div>
+            </div>
+            <button class="btn-primary" id="btnAccess">Entrar al juego</button>
+            <p id="authError" class="small status-bad hidden"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-card hidden" id="screen-home">
+      <div class="card-body">
+        <div class="topbar">
+          <div>
+            <h2>Elige tu modo</h2>
+            <p class="sub">El primer jugador crea sala, tema e idioma. El resto entra con el código.</p>
+          </div>
+          <div class="pill">🔐 Clave validada</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="spark">👑</div>
+            <h3>Crear sala</h3>
+            <p class="sub">Configura la partida y conviértete en host.</p>
+            <div class="grid">
+              <div>
+                <label>Tu nombre</label>
+                <input id="hostName" type="text" maxlength="20" placeholder="Ej. Ana" />
+              </div>
+              <div>
+                <label>Idioma</label>
+                <select id="hostLanguage">
+                  <option value="es">Español</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <div>
+                <label>Tema</label>
+                <select id="hostTheme">
+                  <option value="random">Random</option>
+                  <option value="sports">Deportes</option>
+                  <option value="countries">Países</option>
+                  <option value="languages">Idiomas</option>
+                  <option value="foods">Comidas</option>
+                  <option value="animals">Animales</option>
+                  <option value="jobs">Profesiones</option>
+                  <option value="fruits">Frutas</option>
+                  <option value="transport">Transportes</option>
+                  <option value="objects">Objetos cotidianos</option>
+                  <option value="places">Lugares y espacios</option>
+                  <option value="clothes">Ropa y accesorios</option>
+                  <option value="nature">Elementos naturales y clima</option>
+                  <option value="tools">Herramientas y utensilios</option>
+                  <option value="abstract">Conceptos abstractos</option>
+                  <option value="body">Partes del cuerpo</option>
+                  <option value="tech">Tecnología</option>
+                  <option value="senses">Sentidos y percepciones</option>
+                </select>
+              </div>
+              <button class="btn-success" id="btnCreateRoom">Crear sala</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="spark">🚪</div>
+            <h3>Unirse a sala</h3>
+            <p class="sub">Escribe tu nombre y el código de la sala.</p>
+            <div class="grid">
+              <div>
+                <label>Tu nombre</label>
+                <input id="joinName" type="text" maxlength="20" placeholder="Ej. Luis" />
+              </div>
+              <div>
+                <label>Código de sala</label>
+                <input id="joinRoomCode" type="text" maxlength="6" placeholder="Ej. A7K9Q2" />
+              </div>
+              <button class="btn-primary" id="btnJoinRoom">Entrar en la sala</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px;">
+          <div class="tag-row">
+            <div class="tag">⚽ Deportes</div>
+            <div class="tag">🐶 Animales</div>
+            <div class="tag">🍕 Comidas</div>
+            <div class="tag">🌍 Países</div>
+            <div class="tag">💡 Random</div>
+          </div>
+          <p id="homeError" class="small status-bad hidden" style="margin-top:12px;"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-card hidden" id="screen-lobby">
+      <div class="card-body">
+        <div class="topbar">
+          <div>
+            <h2>Lobby</h2>
+            <p class="sub">Compartid el código, esperad al grupo y comenzad todos juntos.</p>
+          </div>
+          <div class="pill">🎈 Sala en preparación</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="muted">Código de sala</div>
+            <div class="big-code" id="roomCodeLabel">------</div>
+            <div class="small">Compártelo con el resto del equipo.</div>
+
+            <div class="tag-row" style="margin-top:16px;">
+              <div class="tag" id="roomThemeTag">Tema: -</div>
+              <div class="tag" id="roomLangTag">Idioma: -</div>
+              <div class="tag" id="roomHostTag">Host: -</div>
+              <div class="tag" id="roomRoundTag">Ronda: 0</div>
+            </div>
+          </div>
+
+          <div class="card timer-card">
+            <div class="small">Tiempo para unirse</div>
+            <div class="timer-number"><span id="lobbyTimer">360</span>s</div>
+            <div class="progress-track"><div id="timeBar" class="progress-bar"></div></div>
+            <div class="small">La sala admite jugadores durante 6 minutos desde su creación.</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px;">
+          <h3>Jugadores en la sala</h3>
+          <div class="players" id="playersList"></div>
+        </div>
+
+        <div class="grid-2" style="margin-top:18px;">
+          <button class="btn-success" id="btnStartGame">Empezar partida</button>
+          <button class="btn-secondary" id="btnLeaveRoom">Salir de la sala</button>
+        </div>
+
+        <p id="lobbyInfo" class="small" style="margin-top:14px;"></p>
+      </div>
+    </section>
+
+    <section class="screen-card hidden" id="screen-game">
+      <div class="card-body center">
+        <div class="round-hero">
+          <div style="text-align:left;">
+            <h2 id="gameTitle">Tu palabra</h2>
+            <p class="sub" style="margin:6px 0 0;">Mantén el misterio: mira tu palabra y aparta el móvil.</p>
+          </div>
+          <div class="tag-row" style="justify-content:flex-end;">
+            <div class="tag" id="gameRoomTag">Sala: -</div>
+            <div class="tag" id="gameRoundTag">Ronda: 1</div>
+          </div>
+        </div>
+
+        <div class="word-stage">
+          <div class="word-prompt">👀 Prepárate para ver tu palabra</div>
+          <div class="word-box" id="myWordBox">•••••</div>
+        </div>
+
+        <div class="actions-compact">
+          <div class="grid-3">
+            <button class="btn-primary" id="btnRevealWord">Mostrar palabra</button>
+            <button class="btn-secondary" id="btnHideWord">Ocultar palabra</button>
+            <button class="btn-warning hidden" id="btnNextRound">Siguiente ronda</button>
+          </div>
+          <button class="btn-danger hidden full-width" id="btnFinishGame">Finalizar partida</button>
+        </div>
+
+        <p class="small" id="gameInfo" style="margin-top:18px;">Después, hablad entre vosotros e intentad descubrir quién tiene la palabra distinta.</p>
+      </div>
+    </section>
+
+    <section class="screen-card hidden" id="screen-finished">
+      <div class="card-body center">
+        <div class="spark">🏁</div>
+        <h2>Partida finalizada</h2>
+        <p class="sub">El juego ha terminado. Puedes volver al inicio y abrir una sala nueva cuando quieras.</p>
+        <div class="card" style="max-width:420px;margin:0 auto;">
+          <button class="btn-primary" id="btnBackHome">Volver al inicio</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">Diseño actualizado: limpio, animado y listo para GitHub Pages + Supabase.</div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    const ACCESS_PASSWORD = "fUn67.12amÑ";
+    const SUPABASE_URL = "https://jjgwojfxwwwoffglsfsh.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_sAz6Zba-im4JzmzmbsSjHg_Mpz-4va4";
+    const JOIN_WINDOW_MINUTES = 6;
+
+    let supabase = null;
+    function getSupabaseClient(){
+      if (supabase) return supabase;
+      const urlOk = typeof SUPABASE_URL === "string" && SUPABASE_URL.startsWith("http");
+      const keyOk = typeof SUPABASE_KEY === "string" && SUPABASE_KEY && !SUPABASE_KEY.includes("PEGA_AQUI");
+      if(!urlOk || !keyOk){
+        throw new Error("Supabase no está configurado todavía.");
+      }
+      supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+      return supabase;
+    }
+
+    const THEME_META = {
+      random:{ label:"Random", emoji:"💡" },
+      sports:{ label:"Deportes", emoji:"⚽" },
+      countries:{ label:"Países", emoji:"🌍" },
+      languages:{ label:"Idiomas", emoji:"🗣️" },
+      foods:{ label:"Comidas", emoji:"🍕" },
+      animals:{ label:"Animales", emoji:"🐶" },
+      jobs:{ label:"Profesiones", emoji:"🧑‍🍳" },
+      fruits:{ label:"Frutas", emoji:"🍎" },
+      transport:{ label:"Transportes", emoji:"🚆" },
+      objects:{ label:"Objetos cotidianos", emoji:"🔑" },
+      places:{ label:"Lugares y espacios", emoji:"🏖️" },
+      clothes:{ label:"Ropa y accesorios", emoji:"🧥" },
+      nature:{ label:"Elementos naturales y clima", emoji:"⛈️" },
+      tools:{ label:"Herramientas y utensilios", emoji:"🔨" },
+      abstract:{ label:"Conceptos abstractos", emoji:"🧠" },
+      body:{ label:"Partes del cuerpo", emoji:"🖐️" },
+      tech:{ label:"Tecnología", emoji:"🎮" },
+      senses:{ label:"Sentidos y percepciones", emoji:"👂" }
+    };
+
+    const WORDS = {
+      es: {
+        sports: [["fútbol","baloncesto"],["tenis","pádel"],["voleibol","balonmano"],["natación","atletismo"],["boxeo","judo"],["ciclismo","motociclismo"]],
+        countries: [["España","Italia"],["Francia","Portugal"],["México","Argentina"],["Japón","Corea"],["Brasil","Colombia"],["Egipto","Marruecos"]],
+        languages: [["español","italiano"],["inglés","alemán"],["francés","portugués"],["árabe","hebreo"],["japonés","chino"],["catalán","gallego"]],
+        foods: [["pizza","hamburguesa"],["sushi","ramen"],["paella","risotto"],["ensalada","sopa"],["taco","burrito"],["croqueta","empanadilla"]],
+        animals: [["perro","gato"],["león","tigre"],["caballo","burro"],["delfín","tiburón"],["águila","halcón"],["oveja","cabra"]],
+        jobs: [["doctor","enfermero"],["policía","bombero"],["profesor","abogado"],["cocinero","camarero"],["arquitecto","ingeniero"],["dentista","veterinario"]],
+        fruits: [["manzana","pera"],["plátano","mango"],["uva","cereza"],["naranja","mandarina"],["sandía","melón"],["kiwi","piña"]],
+        transport: [["coche","moto"],["tren","metro"],["avión","helicóptero"],["barco","submarino"],["bicicleta","patinete"],["autobús","tranvía"]],
+        objects: [["mesa","silla"],["reloj","calendario"],["llave","candado"],["vaso","taza"],["lámpara","linterna"],["cuaderno","libro"]],
+        places: [["playa","montaña"],["museo","biblioteca"],["hospital","farmacia"],["aeropuerto","estación"],["restaurante","cafetería"],["parque","plaza"]],
+        clothes: [["camisa","chaqueta"],["zapato","sandalia"],["sombrero","gorra"],["bufanda","guante"],["pantalón","falda"],["anillo","pulsera"]],
+        nature: [["lluvia","nieve"],["río","lago"],["bosque","selva"],["trueno","relámpago"],["sol","luna"],["arena","roca"]],
+        tools: [["martillo","destornillador"],["cuchara","tenedor"],["sierra","lima"],["taladro","llave inglesa"],["tijeras","cúter"],["escoba","fregona"]],
+        abstract: [["justicia","ley"],["azar","suerte"],["promesa","juramento"],["secreto","mentira"],["memoria","recuerdo"],["paz","calma"]],
+        body: [["codo","rodilla"],["pestaña","ceja"],["tobillo","muñeca"],["garganta","lengua"],["columna","costilla"],["pulgar","índice"]],
+        tech: [["dron","cámara"],["consola","ordenador"],["auriculares","altavoz"],["impresora","escáner"],["app","web"],["teclado","ratón"]],
+        senses: [["olfato","gusto"],["tacto","visión"],["sonido","silencio"],["olor","perfume"],["frío","calor"],["brillo","sombra"]]
+      },
+      en: {
+        sports: [["soccer","basketball"],["tennis","padel"],["volleyball","handball"],["swimming","athletics"],["boxing","judo"],["cycling","motorsport"]],
+        countries: [["Spain","Italy"],["France","Portugal"],["Mexico","Argentina"],["Japan","Korea"],["Brazil","Colombia"],["Egypt","Morocco"]],
+        languages: [["Spanish","Italian"],["English","German"],["French","Portuguese"],["Arabic","Hebrew"],["Japanese","Chinese"],["Catalan","Galician"]],
+        foods: [["pizza","burger"],["sushi","ramen"],["paella","risotto"],["salad","soup"],["taco","burrito"],["croquette","dumpling"]],
+        animals: [["dog","cat"],["lion","tiger"],["horse","donkey"],["dolphin","shark"],["eagle","falcon"],["sheep","goat"]],
+        jobs: [["doctor","nurse"],["police officer","firefighter"],["teacher","lawyer"],["chef","waiter"],["architect","engineer"],["dentist","veterinarian"]],
+        fruits: [["apple","pear"],["banana","mango"],["grape","cherry"],["orange","tangerine"],["watermelon","melon"],["kiwi","pineapple"]],
+        transport: [["car","motorbike"],["train","subway"],["plane","helicopter"],["boat","submarine"],["bicycle","scooter"],["bus","tram"]],
+        objects: [["table","chair"],["clock","calendar"],["key","lock"],["glass","cup"],["lamp","flashlight"],["notebook","book"]],
+        places: [["beach","mountain"],["museum","library"],["hospital","pharmacy"],["airport","station"],["restaurant","cafe"],["park","square"]],
+        clothes: [["shirt","jacket"],["shoe","sandal"],["hat","cap"],["scarf","glove"],["trousers","skirt"],["ring","bracelet"]],
+        nature: [["rain","snow"],["river","lake"],["forest","jungle"],["thunder","lightning"],["sun","moon"],["sand","rock"]],
+        tools: [["hammer","screwdriver"],["spoon","fork"],["saw","file"],["drill","wrench"],["scissors","cutter"],["broom","mop"]],
+        abstract: [["justice","law"],["chance","luck"],["promise","oath"],["secret","lie"],["memory","remembrance"],["peace","calm"]],
+        body: [["elbow","knee"],["eyelash","eyebrow"],["ankle","wrist"],["throat","tongue"],["spine","rib"],["thumb","index finger"]],
+        tech: [["drone","camera"],["console","computer"],["headphones","speaker"],["printer","scanner"],["app","website"],["keyboard","mouse"]],
+        senses: [["smell","taste"],["touch","vision"],["sound","silence"],["odor","perfume"],["cold","heat"],["brightness","shadow"]]
+      }
+    };
+
+    let currentRoom = null;
+    let currentPlayer = null;
+    let roomPoll = null;
+    let countdownPoll = null;
+    let gamePoll = null;
+    let lastSeenRound = null;
+
+    const el = (id) => document.getElementById(id);
+
+    function show(screenId){
+      ["screen-auth","screen-home","screen-lobby","screen-game","screen-finished"].forEach(id => {
+        el(id).classList.add("hidden");
+      });
+      el(screenId).classList.remove("hidden");
+    }
+
+    function setText(id, value){ el(id).textContent = value; }
+    function showError(targetId, msg){ const node = el(targetId); node.textContent = msg; node.classList.remove("hidden"); }
+    function hideError(targetId){ el(targetId).classList.add("hidden"); el(targetId).textContent = ""; }
+    function normalizeName(name){ return (name || "").trim().replace(/\s+/g, " ").slice(0,20); }
+
+    function makeRoomCode(){
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let out = "";
+      for(let i=0;i<6;i++) out += chars[Math.floor(Math.random()*chars.length)];
+      return out;
+    }
+
+    function getThemeLabel(theme){
+      const info = THEME_META[theme];
+      return info ? `${info.emoji} ${info.label}` : theme;
+    }
+
+    function getLangLabel(lang){ return lang === "en" ? "English" : "Español"; }
+    function getDeadlinePlus6MinutesISO(){ return new Date(Date.now() + JOIN_WINDOW_MINUTES * 60 * 1000).toISOString(); }
+    function secondsRemaining(deadlineIso){ const diff = new Date(deadlineIso).getTime() - Date.now(); return Math.max(0, Math.floor(diff / 1000)); }
+
+    function updateTimerBar(secondsLeft){
+      const total = JOIN_WINDOW_MINUTES * 60;
+      const ratio = Math.max(0, Math.min(1, secondsLeft / total));
+      el("timeBar").style.width = `${ratio * 100}%`;
+    }
+
+    function pickWordPair(theme, language){
+      const langPack = WORDS[language];
+      let themeToUse = theme;
+      if(theme === "random"){
+        const available = Object.keys(langPack);
+        themeToUse = available[Math.floor(Math.random() * available.length)];
+      }
+      const pairs = langPack[themeToUse];
+      const pair = pairs[Math.floor(Math.random() * pairs.length)];
+      return { themeUsed: themeToUse, pair };
+    }
+
+    function capitalizeWord(text){
+      if(!text) return "";
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function playerAvatar(name){
+      return (name || "?").charAt(0).toUpperCase();
+    }
+
+    function pulseWord(){
+      const box = el("myWordBox");
+      box.classList.remove("revealed");
+      void box.offsetWidth;
+      box.classList.add("revealed");
+    }
+
+    function gentleVibrate(ms = 70){
+      if ("vibrate" in navigator) navigator.vibrate(ms);
+    }
+
+    async function getRoom(roomCode){
+      const { data, error } = await getSupabaseClient().from("rooms").select("*").eq("id", roomCode).maybeSingle();
+      if(error) throw error;
+      return data;
+    }
+
+    async function getPlayers(roomCode){
+      const { data, error } = await getSupabaseClient().from("players").select("*").eq("room_id", roomCode).order("joined_at", { ascending: true });
+      if(error) throw error;
+      return data || [];
+    }
+
+    async function createRoom(){
+      hideError("homeError");
+      const hostName = normalizeName(el("hostName").value);
+      const language = el("hostLanguage").value;
+      const theme = el("hostTheme").value;
+      if(!hostName){ showError("homeError","Escribe tu nombre para crear la sala."); return; }
+
+      let roomCode = "";
+      let created = false;
+
+      for(let i=0;i<8 && !created;i++){
+        roomCode = makeRoomCode();
+        const existing = await getRoom(roomCode);
+        if(!existing){
+          const { error: roomError } = await getSupabaseClient().from("rooms").insert({
+            id: roomCode,
+            host_name: hostName,
+            language,
+            theme,
+            status: "lobby",
+            join_deadline: getDeadlinePlus6MinutesISO(),
+            common_word: null,
+            liar_word: null,
+            theme_used: null,
+            round_number: 0
+          });
+          if(roomError) throw roomError;
+
+          const { data: insertedPlayer, error: playerError } = await getSupabaseClient().from("players").insert({
+            room_id: roomCode,
+            name: hostName,
+            is_host: true,
+            word: null,
+            is_liar: false
+          }).select().single();
+          if(playerError) throw playerError;
+
+          currentRoom = roomCode;
+          currentPlayer = insertedPlayer;
+          created = true;
+        }
+      }
+
+      if(!created){ showError("homeError","No se pudo crear la sala. Inténtalo otra vez."); return; }
+      openLobby();
+    }
+
+    async function joinRoom(){
+      hideError("homeError");
+      const name = normalizeName(el("joinName").value);
+      const roomCode = (el("joinRoomCode").value || "").trim().toUpperCase();
+
+      if(!name){ showError("homeError","Escribe tu nombre para entrar."); return; }
+      if(!roomCode){ showError("homeError","Introduce el código de sala."); return; }
+
+      const room = await getRoom(roomCode);
+      if(!room){ showError("homeError","No existe una sala con ese código."); return; }
+      if(room.status !== "lobby"){ showError("homeError","La partida ya ha empezado o la sala ya no admite jugadores."); return; }
+      if(secondsRemaining(room.join_deadline) <= 0){ showError("homeError","La ventana de unión de 6 minutos ya terminó."); return; }
+
+      const players = await getPlayers(roomCode);
+      const duplicate = players.find(p => p.name.toLowerCase() === name.toLowerCase());
+      if(duplicate){ showError("homeError","Ya hay un jugador con ese nombre en la sala. Usa otro."); return; }
+
+      const { data: insertedPlayer, error } = await getSupabaseClient().from("players").insert({
+        room_id: roomCode,
+        name,
+        is_host: false,
+        word: null,
+        is_liar: false
+      }).select().single();
+      if(error) throw error;
+
+      currentRoom = roomCode;
+      currentPlayer = insertedPlayer;
+      openLobby();
+    }
+
+    async function renderLobby(){
+      const room = await getRoom(currentRoom);
+      if(!room){ stopAllPolling(); show("screen-home"); return; }
+
+      setText("roomCodeLabel", room.id);
+      setText("roomThemeTag", `Tema: ${getThemeLabel(room.theme)}`);
+      setText("roomLangTag", `Idioma: ${getLangLabel(room.language)}`);
+      setText("roomHostTag", `Host: ${room.host_name}`);
+      setText("roomRoundTag", `Ronda: ${room.round_number || 0}`);
+
+      const players = await getPlayers(currentRoom);
+      el("playersList").innerHTML = players.map(p => `
+        <div class="player">
+          <div class="player-main">
+            <div class="avatar">${playerAvatar(p.name)}</div>
+            <div>
+              <div class="player-name">${escapeHtml(p.name)}</div>
+              <div class="small">${p.is_host ? "Host de la sala" : "Jugador"}</div>
+            </div>
+          </div>
+          <div class="player-side">
+            ${p.is_host ? '<div class="tag">👑 Host</div>' : ''}
+            <div class="status-dot ${p.word ? '' : 'status-wait'}"></div>
+          </div>
+        </div>
+      `).join("");
+
+      const secs = secondsRemaining(room.join_deadline);
+      setText("lobbyTimer", String(secs));
+      updateTimerBar(secs);
+
+      const isHost = currentPlayer?.is_host === true;
+      el("btnStartGame").disabled = !isHost || players.length < 3;
+      el("btnStartGame").textContent = isHost ? "Empezar partida" : "Solo el host puede empezar";
+
+      let info = "";
+      if(players.length < 3) info = "Necesitáis al menos 3 jugadores para empezar.";
+      else if(isHost) info = "Puedes empezar ya o esperar a que termine el tiempo.";
+      else info = "Esperando a que el host inicie la partida.";
+
+      if(secs <= 0 && room.status === "lobby"){
+        if(isHost && players.length >= 3){
+          info = "El tiempo terminó. Iniciando partida...";
+          setText("lobbyInfo", info);
+          await startGame();
+          return;
+        } else if(players.length < 3) {
+          info = "El tiempo terminó, pero no hay suficientes jugadores. El host debe crear una sala nueva.";
+        }
+      }
+
+      setText("lobbyInfo", info);
+      if(room.status === "started"){
+        stopLobbyPolling();
+        await openGame();
+      } else if(room.status === "finished"){
+        stopAllPolling();
+        show("screen-finished");
+      }
+    }
+
+    function startLobbyPolling(){
+      stopLobbyPolling();
+      renderLobby();
+      roomPoll = setInterval(renderLobby, 2000);
+      countdownPoll = setInterval(async () => {
+        const room = await getRoom(currentRoom);
+        if(room){
+          const secs = secondsRemaining(room.join_deadline);
+          setText("lobbyTimer", String(secs));
+          updateTimerBar(secs);
+        }
+      }, 1000);
+    }
+
+    function stopLobbyPolling(){
+      if(roomPoll) clearInterval(roomPoll);
+      if(countdownPoll) clearInterval(countdownPoll);
+      roomPoll = null;
+      countdownPoll = null;
+    }
+
+    function stopGamePolling(){
+      if(gamePoll) clearInterval(gamePoll);
+      gamePoll = null;
+    }
+
+    function stopAllPolling(){
+      stopLobbyPolling();
+      stopGamePolling();
+    }
+
+    async function openLobby(){
+      show("screen-lobby");
+      await renderLobby();
+      startLobbyPolling();
+    }
+
+    async function assignRoundWords(room, players, nextRoundNumber){
+      const { themeUsed, pair } = pickWordPair(room.theme, room.language);
+      const liarIndex = Math.floor(Math.random() * players.length);
+
+      for(let i = 0; i < players.length; i++){
+        const player = players[i];
+        const assignedWord = i === liarIndex ? pair[1] : pair[0];
+        const isLiar = i === liarIndex;
+
+        const { error } = await getSupabaseClient().from("players").update({
+          word: assignedWord,
+          is_liar: isLiar
+        }).eq("id", player.id);
+        if(error) throw error;
+      }
+
+      const { error: roomError } = await getSupabaseClient().from("rooms").update({
+        status: "started",
+        common_word: pair[0],
+        liar_word: pair[1],
+        theme_used: themeUsed,
+        round_number: nextRoundNumber
+      }).eq("id", currentRoom);
+      if(roomError) throw roomError;
+    }
+
+    async function startGame(){
+      const room = await getRoom(currentRoom);
+      const players = await getPlayers(currentRoom);
+
+      if(!currentPlayer?.is_host) return alert("Solo el host puede iniciar la partida.");
+      if(!room || room.status !== "lobby") return;
+      if(players.length < 3) return alert("Se necesitan al menos 3 jugadores.");
+
+      await assignRoundWords(room, players, 1);
+      stopLobbyPolling();
+      await openGame();
+    }
+
+    async function nextRound(){
+      const room = await getRoom(currentRoom);
+      const players = await getPlayers(currentRoom);
+      if(!currentPlayer?.is_host) return;
+      if(!room || room.status !== "started") return;
+      if(players.length < 3) return alert("Se necesitan al menos 3 jugadores.");
+
+      await assignRoundWords(room, players, (room.round_number || 1) + 1);
+      await syncGameState(true);
+    }
+
+    async function finishGame(){
+      if(!currentPlayer?.is_host) return;
+      const { error } = await getSupabaseClient().from("rooms").update({ status: "finished" }).eq("id", currentRoom);
+      if(error) throw error;
+      stopAllPolling();
+      show("screen-finished");
+    }
+
+    async function syncGameState(forceWordRefresh = false){
+      const room = await getRoom(currentRoom);
+      if(!room){ stopAllPolling(); show("screen-home"); return; }
+      if(room.status === "finished"){
+        stopAllPolling();
+        show("screen-finished");
+        return;
+      }
+
+      const { data, error } = await getSupabaseClient().from("players").select("*").eq("id", currentPlayer.id).single();
+      if(error) throw error;
+      currentPlayer = data;
+
+      setText("gameRoomTag", `Sala: ${room.id}`);
+      setText("gameRoundTag", `Ronda: ${room.round_number || 1}`);
+
+      const isHost = currentPlayer.is_host === true;
+      el("btnNextRound").classList.toggle("hidden", !isHost);
+      el("btnFinishGame").classList.toggle("hidden", !isHost);
+
+      if(forceWordRefresh || lastSeenRound !== room.round_number){
+        lastSeenRound = room.round_number;
+        el("myWordBox").textContent = "•••••";
+        el("myWordBox").classList.remove("revealed");
+        setText("gameInfo", isHost
+          ? "Puedes mostrar tu palabra, iniciar la siguiente ronda o finalizar la partida."
+          : "Espera a que el host cambie de ronda o finalice la partida.");
+      }
+    }
+
+    async function openGame(){
+      show("screen-game");
+      lastSeenRound = null;
+      await syncGameState(true);
+      stopGamePolling();
+      gamePoll = setInterval(() => syncGameState(false), 2000);
+    }
+
+    async function leaveRoom(){
+      if(currentPlayer?.id) await getSupabaseClient().from("players").delete().eq("id", currentPlayer.id);
+      stopAllPolling();
+      currentRoom = null;
+      currentPlayer = null;
+      lastSeenRound = null;
+      show("screen-home");
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    el("btnTogglePassword").addEventListener("click", () => {
+      const input = el("accessPassword");
+      const showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      el("btnTogglePassword").textContent = showing ? "Mostrar" : "Ocultar";
+    });
+
+    el("btnAccess").addEventListener("click", () => {
+      hideError("authError");
+      const entered = el("accessPassword").value;
+      if(entered !== ACCESS_PASSWORD){ showError("authError", "Clave incorrecta."); return; }
+      show("screen-home");
+    });
+
+    el("accessPassword").addEventListener("keydown", (e) => {
+      if(e.key === "Enter") el("btnAccess").click();
+    });
+
+    el("btnCreateRoom").addEventListener("click", async () => {
+      try { await createRoom(); }
+      catch (err) { console.error(err); showError("homeError", "No se pudo crear la sala. Revisa la configuración de Supabase."); }
+    });
+
+    el("btnJoinRoom").addEventListener("click", async () => {
+      try { await joinRoom(); }
+      catch (err) { console.error(err); showError("homeError", "No se pudo entrar en la sala. Revisa el código o la configuración."); }
+    });
+
+    el("btnStartGame").addEventListener("click", async () => {
+      try { await startGame(); }
+      catch (err) { console.error(err); alert("No se pudo iniciar la partida."); }
+    });
+
+    el("btnLeaveRoom").addEventListener("click", async () => {
+      try { await leaveRoom(); }
+      catch (err) { console.error(err); show("screen-home"); }
+    });
+
+    el("btnRevealWord").addEventListener("click", () => {
+      el("myWordBox").textContent = capitalizeWord(currentPlayer?.word || "(sin palabra)");
+      pulseWord();
+      gentleVibrate();
+    });
+
+    el("btnHideWord").addEventListener("click", () => {
+      el("myWordBox").textContent = "•••••";
+      el("myWordBox").classList.remove("revealed");
+    });
+
+    el("btnNextRound").addEventListener("click", async () => {
+      try { await nextRound(); }
+      catch (err) { console.error(err); alert("No se pudo pasar a la siguiente ronda."); }
+    });
+
+    el("btnFinishGame").addEventListener("click", async () => {
+      try { await finishGame(); }
+      catch (err) { console.error(err); alert("No se pudo finalizar la partida."); }
+    });
+
+    el("btnBackHome").addEventListener("click", async () => {
+      try { await leaveRoom(); }
+      catch (err) { console.error(err); show("screen-home"); }
+    });
+  </script>
+</body>
+</html>
