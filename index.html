@@ -108,7 +108,7 @@
       overflow:hidden;
     }
 
-    .card-body{ padding:16px; }
+    .card-body{ padding:24px; }
     .card{
       background:var(--panel);
       border:1px solid var(--line);
@@ -156,7 +156,7 @@
     }
 
     .hero-panel{
-      padding:18px;
+      padding:28px;
       min-height:240px;
       display:flex;
       flex-direction:column;
@@ -474,14 +474,14 @@
       justify-content:center;
       text-align:center;
       border-radius:26px;
-      padding:18px;
+      padding:28px;
       overflow:hidden;
       background:
         radial-gradient(circle at top, rgba(103,232,249,.16), transparent 38%),
         linear-gradient(180deg, rgba(15,23,42,.92), rgba(15,23,42,.78));
       border:1px dashed rgba(255,255,255,.16);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-      font-size:clamp(32px, 9vw, 64px);
+      font-size:clamp(42px, 8vw, 78px);
       font-weight:900;
       line-height:1.05;
       letter-spacing:-.04em;
@@ -522,6 +522,117 @@
       .word-box{ min-height:170px; }
     }
 
+    
+    .hero{ grid-template-columns:minmax(0,1fr) minmax(280px,.72fr); }
+    .app{ max-width:960px; margin:0 auto; }
+    .screen-card{ width:100%; }
+    .mascot-card{ min-height:210px; }
+    .mascot-note{ display:none; }
+
+    @media (max-width: 900px){
+      body{ padding:14px; }
+      .app{ max-width:680px; }
+      .hero{ grid-template-columns:1fr; }
+      .mascot-card{ min-height:180px; }
+    }
+
+    @media (max-width: 640px){
+      body{
+        padding:10px;
+        align-items:flex-start;
+      }
+      .app{
+        width:100%;
+        max-width:100%;
+        gap:12px;
+      }
+      .screen-card{
+        border-radius:20px;
+      }
+      .card-body{
+        padding:14px;
+      }
+      .card{
+        padding:14px;
+        border-radius:16px;
+      }
+      .hero{
+        gap:12px;
+      }
+      .hero-panel{
+        min-height:auto;
+        padding:14px;
+      }
+      h1{
+        font-size:clamp(28px, 9vw, 40px);
+        margin-bottom:6px;
+      }
+      h2{
+        font-size:clamp(22px, 7vw, 28px);
+      }
+      .sub{
+        font-size:14px;
+        line-height:1.5;
+        margin-bottom:12px;
+      }
+      input, select, button{
+        font-size:16px;
+        padding:13px 14px;
+      }
+      .password-wrap input{
+        padding-right:100px;
+      }
+      .toggle-password{
+        right:6px;
+        padding:9px 10px;
+        font-size:13px;
+      }
+      .topbar{
+        gap:10px;
+        margin-bottom:12px;
+      }
+      .topbar .pill{
+        width:100%;
+        justify-content:center;
+      }
+      .grid-2, .grid-3, .round-hero{
+        grid-template-columns:1fr;
+      }
+      .big-code{
+        font-size:clamp(28px, 12vw, 46px);
+        letter-spacing:.14em;
+      }
+      .player{
+        padding:12px;
+        border-radius:14px;
+      }
+      .avatar{
+        width:38px;
+        height:38px;
+        border-radius:12px;
+      }
+      .tag, .pill, .badge{
+        font-size:12px;
+        padding:7px 10px;
+      }
+      .timer-number{
+        font-size:clamp(28px, 10vw, 42px);
+      }
+      .word-box{
+        min-height:150px;
+        padding:18px;
+        font-size:clamp(30px, 10vw, 54px);
+        border-radius:20px;
+      }
+      .actions-compact{
+        margin-top:14px;
+        gap:10px;
+      }
+      .small{
+        font-size:12px;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce){
       body, body::before, body::after, .word-box.revealed { animation:none !important; }
       * { transition:none !important; }
@@ -536,11 +647,7 @@
           <div class="card hero-panel">
             <div class="spark">🎭</div>
             <h1>Liar Game</h1>
-            <p class="sub"></p>
             
-              <div class="badge">🎯 Temas por categoría</div>
-              <div class="badge">🌀 Rondas ilimitadas</div>
-            </div>
           </div>
 
           <div class="card mascot-card">
@@ -573,7 +680,7 @@
                 <circle cx="154" cy="146" r="9" fill="#f6d7b0"/>
                 <rect x="89" y="167" width="62" height="10" rx="5" fill="rgba(255,255,255,.26)"/>
               </svg>
-              <div class="mascot-note"></div>
+              
             </div>
           </div>
         </div>
@@ -610,7 +717,7 @@
           <div class="card">
             <div class="spark">👑</div>
             <h3>Crear sala</h3>
-            <p class="sub"></p>
+            
             <div class="grid">
               <div>
                 <label>Tu nombre</label>
@@ -668,13 +775,7 @@
           </div>
         </div>
 
-        
-            <div class="tag">🍕 Comidas</div>
-            <div class="tag">🌍 Países</div>
-            <div class="tag">💡 Random</div>
-          </div>
-          <p id="homeError" class="small status-bad hidden" style="margin-top:12px;"></p>
-        </div>
+        <p id="homeError" class="small status-bad hidden" style="margin-top:14px;"></p>
       </div>
     </section>
 
@@ -765,8 +866,6 @@
         </div>
       </div>
     </section>
-
-    <div class="footer-note"></div>
   </div>
 
   <script type="module">
