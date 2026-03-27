@@ -880,7 +880,7 @@
     function getSupabaseClient(){
       if (supabase) return supabase;
       const urlOk = typeof SUPABASE_URL === "string" && SUPABASE_URL.startsWith("http");
-      const keyOk = typeof SUPABASE_KEY === "string" && SUPABASE_KEY && !SUPABASE_KEY.includes("sb_publishable_sAz6Zba-im4JzmzmbsSjHg_Mpz-4va4");
+      const keyOk = typeof SUPABASE_KEY === "string" && SUPABASE_KEY && !SUPABASE_KEY.includes("PEGA_AQUI");
       if(!urlOk || !keyOk){
         throw new Error("Supabase no está configurado todavía.");
       }
