@@ -1,28 +1,37 @@
-# Liar Game – paquete rediseñado
+# Liar Game – paquete listo para GitHub
 
-Este paquete mantiene todas las funciones que ya tenías y añade un rediseño visual más divertido:
+Esta versión mantiene el diseño y las funcionalidades existentes, pero mejora la variedad de palabras para que se repitan mucho menos al recargar la web o encadenar partidas.
 
-- fondo animado
-- tarjetas glassmorphism
-- botones más vivos
-- avatares automáticos
-- barra visual del tiempo
-- palabra gigante con animación
-- mascota ligera tipo muñeco mentiroso ("Lino")
-- sin perder multijugador, rondas, finalizar partida ni selección de tema
+## Mejoras incluidas
+- misma interfaz y mismo diseño visual
+- más palabras por categoría e idioma
+- selección más aleatoria usando `crypto.getRandomValues` cuando está disponible
+- historial local de palabras recientes para evitar repeticiones inmediatas
+- mejor rotación del tema cuando se usa `Random`
+- misma lógica multijugador con Supabase, lobby, rondas y finalización de partida
+
+## Archivos incluidos
+- `index.html`
+- `README.md`
+- `supabase_setup.sql`
 
 ## Qué subir a GitHub
-Sube `index.html` a la raíz del repositorio.
+Sube estos archivos a la raíz del repositorio o descomprime el ZIP directamente en tu proyecto y haz commit.
 
-## Qué revisar antes
-Abre `index.html` y sustituye:
-- `PEGA_AQUI_TU_PROJECT_URL`
-- `PEGA_AQUI_TU_PUBLISHABLE_KEY_O_ANON_KEY`
+## Supabase
+En principio **no necesitas cambios adicionales en Supabase**, porque la mejora se ha hecho en la lógica del frontend y la estructura SQL actual ya soporta el juego.
 
-## SQL
-No hace falta cambiar el SQL si ya te funciona la versión anterior con rondas.
-Si quieres rehacer la base desde cero, usa `supabase_setup.sql`.
+Solo tendrías que tocar Supabase si:
+- todavía no has creado las tablas y políticas
+- quieres rehacer la base desde cero
+- tu proyecto actual no tiene aplicado `supabase_setup.sql`
 
+## Antes de publicar
+Revisa en `index.html` que sigan correctos:
+- `SUPABASE_URL`
+- `SUPABASE_KEY`
 
-## Nota sobre los botones
-En esta versión, los botones de acceso funcionan aunque Supabase aún no esté configurado. Solo se intentará conectar a Supabase al crear o unirse a una sala.
+## Despliegue rápido
+1. Sube los archivos al repositorio.
+2. Publica con GitHub Pages o el hosting que uses.
+3. Prueba crear una sala y varias rondas para confirmar que la rotación de palabras te convence.
